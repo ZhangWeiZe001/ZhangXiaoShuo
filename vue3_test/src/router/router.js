@@ -66,6 +66,12 @@ const routes= [
     name:'search',
     path:'/search',
     component:()=>import('@/components/search/search.vue')
+  },
+  //搜索作者页面
+  {
+    name:'author',
+    path:'/author',
+    component:()=>import('@/components/search/author.vue')
   }
 ]
 

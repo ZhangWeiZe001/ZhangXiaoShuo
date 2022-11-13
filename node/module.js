@@ -293,8 +293,8 @@ router.post('/ifbookBox',(req,res)=>{
   `
   request.query(sql,(err,data)=>{
     //返回数据
-    //如果书架数据为空则 直接结束该函数并返回 true
-    if(!data.recordset[0].bookBox) {return res.send(true)}
+    //如果书架数据为 undefined 则直接结束该函数并返回 true
+    if(data.recordset[0]==undefined) {return res.send(true)}
     let bookBox = data.recordset[0].bookBox;
     let reg = new RegExp(req.body.bookId);
     
@@ -369,7 +369,6 @@ router.post('/Unsubscribe',(req,res)=>{
 
 //上传时检查书名是否被用过
 router.post('/examineBook',(req,res)=>{
-  console.log('111');
   let Name = req.body.Name;
   sql = `select * from book where Name='${Name}'`
   request.query(sql,(err,data)=>{
@@ -409,6 +408,7 @@ router.post('/uploading',(req,res)=>{
       request.query(sql,(err,data)=>{
         //开始解析 用户的 mybook
         let mybook = data.recordset[0].myBookId;
+        console.log(mybook);
         //如果myBook不是第一次就先解析为数组 操作完成后在 重新封装为 JSON
         if(mybook){
           mybook = JSON.parse(mybook);
@@ -420,11 +420,14 @@ router.post('/uploading',(req,res)=>{
           mybook.push(id);
           mybook = JSON.stringify(mybook);
         }
+        console.log(mybook);
+        console.log(user);
         sql = `
         update consumer set
         myBookId = '${mybook}'
         where [user] = '${user}'
         `
+        console.log(sql);
         //最后一步 将处理好的数据保存到用户的 myBookId中 
         //然后返回信息给前端
         request.query(sql,(err,data)=>{
@@ -543,6 +546,18 @@ router.post('/getSearch',(req,res)=>{
   select * from book
   where Name like '%${req.body.search}%' or JianJie like '%${req.body.search}%'
   `
+  request.query(sql,(err,data)=>{
+    res.send(data.recordset)
+  })
+})
+
+//通过书籍作者 获取相对应的书籍
+router.post('/getAuthor',(req,res)=>{
+  let sql = `
+  select * from book
+  where Author = '${req.body.author}'
+  `
+
   request.query(sql,(err,data)=>{
     res.send(data.recordset)
   })

@@ -6,11 +6,11 @@
     <div id="jie-main-right">
       <div id="oneLine">
         <h1>{{book.Name}}</h1>
-        <p>{{book.Author}}</p>
+        <p style=" cursor:pointer;" @click="goToAuthor(book.Author)">{{book.Author}}</p>
      </div>
      
      <div id="twoLine">
-         <span>分类</span> <span style="color:gold">{{book.Class}}</span>      
+         <span>分类</span> <span style="cursor:pointer; color:gold" @click="gotoClass(book.Class)">{{book.Class}}</span>      
      </div>
 
      <div id="threeLine">
@@ -35,7 +35,7 @@
 
 <script>
 import { useRouter } from 'vue-router';
-import {reactive,toRefs,toRaw} from 'vue'
+import {reactive,toRefs,toRaw,inject} from 'vue'
 import {useStore} from 'vuex'
 import axios from 'axios';
   
@@ -57,7 +57,8 @@ export default {
         data.on=true
       }
     )
-
+    //刷新当前组件
+    let reload =inject('reload');
     //准备路由
     let $router = useRouter();
     //准备vuex
@@ -93,7 +94,22 @@ export default {
             data.ifbookBox = true;
           }
         )
-      }
+      },
+      //跳转至作者
+      goToAuthor(author){
+      //向数据库写入信息
+      localStorage.setItem('author',author)
+      $router.push('/author')
+    
+      },
+      //跳转至分类
+      gotoClass(Class){
+      //将类型储存到本地方便读取
+      localStorage.setItem('class',Class);
+      $router.push('/bookSubarea')
+      //下面的 方法用于 bookSubarea 中刷新页面(不会影响该组件原本的功能)
+      reload();
+    },
     })
 
     function lookBook(){

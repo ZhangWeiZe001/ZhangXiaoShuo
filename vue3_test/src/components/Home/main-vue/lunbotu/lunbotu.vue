@@ -90,7 +90,7 @@ export default {
 
  #imglist{
   position: relative;
-  top:274px;
+  top:277px;
   width: 100%;
   text-align: center;
   border: 1px black solid;
@@ -98,7 +98,7 @@ export default {
 
  #imglist>li{
   float: left;
-  font-size: 19px;
+  font-size: 15px;
   /* background-color: rgba(128, 128, 128, 0.452); */
   width: 20%;
   border: 1px black solid;

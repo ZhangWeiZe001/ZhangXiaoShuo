@@ -5,9 +5,9 @@
     <ul>
       <li id="MeiRiTui" v-for="(book,index) in newBook" :key="book.Id">
         <!-- 先写a标签 后期改成路由跳转标签 -->
-        <a style="color: gainsboro;">[{{book.Class}}]</a>
+        <a style="color: gainsboro; cursor:pointer;" @click="gotoClass(book.Class)">[{{book.Class}}]</a>
         <a class="finger" id="bookName" @click = goToBook(book.Id,book.Name)>{{book.Name}}</a>
-        <a style="float:right;font-size: 12px;color: gold;" >{{book.Author}}</a>
+        <a style="float:right;font-size: 12px;color: gold;  cursor:pointer;" @click="goToAuthor(book.Author)">{{book.Author}}</a>
         <br>
       </li>
     </ul>
@@ -15,8 +15,10 @@
 </template>
 
 <script>
-import {reactive,toRefs} from 'vue'
+import {reactive,toRefs,inject} from 'vue'
 import {useStore} from 'vuex'
+import { useRouter } from 'vue-router';
+
 import useGoToBook from '@/hooks/useGoToBook.js'
 
 export default {
@@ -24,18 +26,33 @@ name:'TuiJianLeft',
 props:['newBook'],
 setup(props,context){
  const $store = useStore();
+ const $router = useRouter();
+ const reload = inject('reload')
  let data = reactive({
   newBook : props.newBook,
-
- })
- return{
-  ...toRefs(data),
   goToBook(id,name){
      $store.commit('CUN',{bookId:id,bookName:name});
      localStorage.setItem('bookId',id);
      //跳转路由
      useGoToBook.goToBook();
+  },
+  goToAuthor(author){
+      //向数据库写入信息
+      localStorage.setItem('author',author)
+      $router.push('/author')
+  },
+  gotoClass(Class){
+      //将类型储存到本地方便读取
+      localStorage.setItem('class',Class);
+      $router.push('/bookSubarea')
+      //下面的 方法用于 bookSubarea 中刷新页面(不会影响该组件原本的功能)
+      reload();
   }
+
+ })
+ return{
+  ...toRefs(data),
+  
  }
 }
 }

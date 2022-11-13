@@ -1,9 +1,11 @@
 <template>
   <div id="upBook">
         <h1>上传书籍</h1>
-        小说名:<input type="text" v-model="Name" @blur="blur()"><br> 
-        <p v-if="examineBook" id="examineBook">该书名已经被使用</p>
-        作者名:<input type="text" v-model="Author"><br>
+        小说名:<input type="text" v-model="Name" @blur="blur()"> 
+        <span v-if="examineBook" id="examineBook">该书名已经被使用</span>
+        <br>
+        作者名:<input type="text" v-model="Author">
+        <br>
         书籍类型:<select v-model="Class">
             <option value="历史">历史</option>
             <option value="军事">军事</option>
@@ -12,10 +14,16 @@
             <option value="仙侠">仙侠</option>
             <option value="奇幻">奇幻</option>
             <option value="灵异">灵异</option>
-        </select><br>
-        书籍短简介:<input style="width:300px" type="text" v-model="MiNiJianJie"><br><br>
-        书籍简介:<br>
-        <textarea id="longJian" v-model="JianJie"></textarea><br>
+        </select>
+        <br>
+        书籍短简介:<input style="width:300px" type="text" v-model="MiNiJianJie">
+        <br>
+        <br>
+        书籍简介:
+        <br>
+        <textarea id="longJian" v-model="JianJie"></textarea>
+        <br>
+        <br>
         <input type="file"  @change.prevent.stop="show"/> 
         <button @click="uploading()">上传</button>
     </div>
@@ -23,11 +31,14 @@
 
 <script>
 import axios from 'axios';
-import {reactive,toRefs,ref} from 'vue';
+import {reactive,toRefs,ref,inject} from 'vue';
 
 export default {
  name:'upBook',
  setup(){
+    //刷新当前组件
+    let reload =inject('reload');
+
     let upBook = reactive({
     //用于控制显示的 功能项
     Name:'',
@@ -51,7 +62,7 @@ export default {
         upBook.bookData = reader.result;
       }
     },
-    //失去焦点
+    //检查该书名是否合规
     blur(){
       axios({
         method:'post',
@@ -79,7 +90,13 @@ export default {
         url:'http://127.0.0.1:5055/uploading',
         data:{data:upBook}
       }).then(
-        value =>{alert('上传完毕~')}
+        value =>{
+          alert('上传完毕~')
+          this.blur();
+          reload();
+        }
+        //然后执行一次 blur 判断该书是否能用
+        
       )
     }
    })
@@ -119,7 +136,7 @@ margin-right:5px
 /* 书籍是否能被使用 */
 #examineBook{
   margin-top:5px;
-  margin-left: 100px;
+  margin-left: 30px;
   color: red;
 }
 </style>
