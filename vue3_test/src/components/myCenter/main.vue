@@ -6,9 +6,16 @@
 <script>
 import Top from '@/general/top.vue';
 import Body from './body/body.vue';
+//hooks
+import Pending from '@/hooks/ifPending'
 
 export default {
-    components: { Top, Body }
+    name:'Main',
+    components: { Top, Body },
+    setup(){
+       let p = Pending;
+       p.ifPending();
+    }
 }
 </script>
 

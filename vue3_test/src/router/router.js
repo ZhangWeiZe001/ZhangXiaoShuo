@@ -72,6 +72,12 @@ const routes= [
     name:'author',
     path:'/author',
     component:()=>import('@/components/search/author.vue')
+  },
+  //管理员页面
+  {
+    name:'Administrator',
+    path:'/Admin',
+    component:()=>import('@/components/Administrator/main.vue')
   }
 ]
 

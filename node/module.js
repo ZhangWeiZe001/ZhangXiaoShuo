@@ -2,6 +2,8 @@ const express = require('express'); //1 导入 express模块
 const router = express.Router() //2 创建路由对象
 const cors = require('cors');
 const mssql = require('mssql');
+//
+const session = require('express-session')
 //读取资源
 const fs = require('fs');
 const path = require('path');
@@ -17,6 +19,12 @@ router.use(express.json());
 router.use(express.urlencoded({extended:false}));
 //跨域
 router.use(cors());
+//启用 session 中间件
+router.use(session({
+  secret:"keyboard cat", // secret 的属性值可以是任意字符串
+  resave:false ,         //固定写法
+  saveUninitialized:true //固定写法
+}))
 
 //配置数据库
 const config = {
@@ -427,7 +435,7 @@ router.post('/uploading',(req,res)=>{
         myBookId = '${mybook}'
         where [user] = '${user}'
         `
-        console.log(sql);
+
         //最后一步 将处理好的数据保存到用户的 myBookId中 
         //然后返回信息给前端
         request.query(sql,(err,data)=>{
@@ -560,6 +568,31 @@ router.post('/getAuthor',(req,res)=>{
 
   request.query(sql,(err,data)=>{
     res.send(data.recordset)
+  })
+})
+//以下是管理员中需要使用的 后端路由
+//获取所有的用户信息
+router.get('/getUser',(req,res)=>{
+  let sql = 'select * from consumer'
+
+  request.query(sql,(err,data)=>{
+    res.send(data.recordset)
+  })
+})
+//修改用户的信息
+router.post('/amendUser',(req,res)=>{
+  console.log(req.body);
+  let body = req.body;
+  let sql = `
+  update consumer set 
+  [password] = '${body.password}',name = '${body.name}', LV = '${body.LV}' 
+  where [user] = '${body.user}'
+  `
+
+  console.log(sql);
+
+  request.query(sql,(err,data)=>{
+    res.send('ok')
   })
 })
 //向外共享路由

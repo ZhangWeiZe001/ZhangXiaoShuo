@@ -75,7 +75,6 @@ export default {
       $store.commit('CUN',{bookId:book.Id,bookName:book.Name});
       $router.push('/BookYe');
     },
-    //前后翻页
      //前后翻页
      go(p){
       switch(p){
