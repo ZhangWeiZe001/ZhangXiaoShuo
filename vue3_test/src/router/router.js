@@ -23,7 +23,7 @@ const routes= [
   {
     name:'DengZhu',
     path:'/DengZhu',
-    component:() => import('@/components/DengZhu/DengZhu.vue')
+    component:() => import('@/components/DengZhu/DengZhu.vue'),
   },
   //个人中心页面
   {
@@ -77,7 +77,16 @@ const routes= [
   {
     name:'Administrator',
     path:'/Admin',
-    component:()=>import('@/components/Administrator/main.vue')
+    component:()=>import('@/components/Administrator/main.vue'),
+    beforeEnter:(to,from,next)=>{
+      if(localStorage.getItem('AdminPassword')=='true'){
+        next();
+      }else{
+        alert('你没有进入权限!');
+        //注 这里的 router也可以 相当于 vue-router  可以直接使用来跳转 路由
+        router.push('/')
+      }
+    }
   }
 ]
 

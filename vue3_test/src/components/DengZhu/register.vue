@@ -12,6 +12,7 @@
         <p id="errTip" v-if="err">{{err}}</p>
         <div class="btn-box">
             <a href="#">忘记密码</a>
+            <a style="margin-top:10px" @click="goAmind()">管理员登录</a>
             <div>
                 <button alert="确定登录" @click="register">登录</button>
                 <button @click="cut">注册</button>
@@ -33,6 +34,11 @@ export default {
  setup(porps,constext){
     const $store = useStore();
     const $router = useRouter();
+    //设置 后置 路由守卫
+    $router.afterEach((to,from,next)=>{
+        
+    })
+
     let data =reactive({
         user:'',
         password:'',
@@ -42,34 +48,15 @@ export default {
         constext.emit('switchover');
         },
         //登录方法
-        register(){
-          //要求
-          //1)账号和密码不能空
-          if(!data.password||!data.user){
-            return data.err='密码和账号不能为空'
-          }
-          //发送axios请求
-          axios({
-            method:'post',
-            url:'http://127.0.0.1:5055/register',
-            data:{user:data.user,password:data.password}
-          }).then(
-            value =>{
-               //当状态为 true时登录成功 进行保存登录信息和跳转
-               
-               if(value.data.padding){
-                $store.commit('REGISTER',data.user);
-                //存入浏览器本地(可以放入vuex中执行)
-                localStorage.setItem('userPending',true);
-                localStorage.setItem('userName',data.user);
-                alert('登录成功,现返回主页面');
-                //回到主页
-                $router.push('/')
-               }else{  //登录失败时调用
-                 data.err = value.data.err;
-               }
-            }
-          )
+        goAmind(){
+           let password =  prompt('请输入今日的密钥');
+           //密钥暂时使用 123456 后面会用 高级密码代替
+           if(password =='123456'){
+            localStorage.setItem('AdminPassword','true');
+            $router.push('/Admin');
+           }else{
+            alert('密钥输入错误!')
+           }
         }
     }) 
 
@@ -78,7 +65,7 @@ export default {
     return{
         ...toRefs(data),
     }
- }
+ },
 }
 </script>
 

@@ -570,7 +570,9 @@ router.post('/getAuthor',(req,res)=>{
     res.send(data.recordset)
   })
 })
+
 //以下是管理员中需要使用的 后端路由
+
 //获取所有的用户信息
 router.get('/getUser',(req,res)=>{
   let sql = 'select * from consumer'
@@ -579,9 +581,9 @@ router.get('/getUser',(req,res)=>{
     res.send(data.recordset)
   })
 })
+
 //修改用户的信息
 router.post('/amendUser',(req,res)=>{
-  console.log(req.body);
   let body = req.body;
   let sql = `
   update consumer set 
@@ -589,11 +591,34 @@ router.post('/amendUser',(req,res)=>{
   where [user] = '${body.user}'
   `
 
-  console.log(sql);
 
   request.query(sql,(err,data)=>{
     res.send('ok')
   })
 })
+
+router.get('/amendBooks',(req,res)=>{
+  let sql = 'select * from book';
+
+  request.query(sql,(err,data)=>{
+    res.send(data.recordset)
+  })
+})
+
+//修改书籍的信息
+router.post('/amendBooks',(req,res)=>{
+  let body = req.body;
+  let sql = `
+  update book set 
+  Name = '${body.Name}', Author = '${body.Author}' , Class = '${body.Class}' 
+  where  Id = '${body.Id}'
+  `
+   console.log(sql);
+  request.query(sql,(err,data)=>{
+    res.send('ok')
+  })
+})
+
+ 
 //向外共享路由
 module.exports = router;

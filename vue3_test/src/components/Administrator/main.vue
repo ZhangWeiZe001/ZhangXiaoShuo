@@ -1,22 +1,58 @@
 <template>
   <Top></Top>
   <div id="main">
-    <span class="fen on">用户管理</span>
-    <span class="fen">书籍管理</span>
+    <span class="fen" :class="css[0]" @click="cut(0)">用户管理</span>
+    <span class="fen" :class="css[1]" @click="cut(1)">书籍管理</span>
     <div id="content">
-      <User></User>
+      <User v-show="lei[0]"></User>
+      <Books v-show="lei[1]"></Books>
     </div>
   </div>
 </template>
 
 <script>
-
 import Top from './top.vue'
 import User from './constext/user.vue'
+import Books from './constext/books.vue'
+
+import {reactive,toRefs,ref,inject} from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+
+
 export default {
 name:'Administrator',
-components:{Top,User},
+components:{Top,User,Books},
+
+setup(){
+ const $router = useRouter();
+
+ let data = reactive({
+  lei:[true,false],
+  //动态的css 
+  css:['on',''],
+  cut(index){
+    //将所有的元素置为 false
+    for(let i=0;i<this.lei.length;i++){
+      this.lei[i] = false;
+    }
+    //再给当前选择的置为 true
+    this.lei[index] = true;
+
+    for(let i=0;i<this.css.length;i++){
+      this.css[i] = '';
+    }
+    this.css[index] = 'on';
+  }
+ })
+
+ return{
+  ...toRefs(data)
+ }
 }
+}
+
 </script>
 
 <style scoped>

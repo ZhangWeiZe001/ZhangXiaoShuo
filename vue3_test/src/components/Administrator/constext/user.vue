@@ -39,9 +39,6 @@
       当前页: <input type="text" v-model="index">
       <button @click="go(2)">下一页</button>
     </div>
-    <div id="tip">
-     <p>1.每次修改后页面会自动重置一次,请不要一次设置多个用户信息</p>
-    </div>
   </div>
 </template>
 
@@ -67,6 +64,7 @@ setup(){
             for(var j=0;j<=b-1;j++){
               if(value.data[i*b+j] != undefined){
                 a[i][j] = value.data[i*b+j];
+                //这里添加 了amend属性 默认为 false
                 a[i][j].amend = false;
               }
             }
@@ -81,7 +79,6 @@ setup(){
     index:1,
     //前后翻页
     go(p){
-      console.log(this.index);
       switch(p){
         //下一页 需要=2
         case 2: 
@@ -91,7 +88,6 @@ setup(){
         //上一页 需要p=1
         case 1:
         if(this.index == 1) {return} 
-        console.log(111);
         this.index--;
         break;
       }
@@ -99,9 +95,9 @@ setup(){
     //开启设置
     amendON(user){
       //遍历当前 当前页数内对应的 books
-      this.books[this.index-1].forEach(function(value,index){
+      this.books[data.index-1].forEach(function(value,index){
         if(value.user==user){
-          data.books[0][index].amend = true;
+          data.books[data.index-1][index].amend = true;
         }
       })
     },
