@@ -1,6 +1,13 @@
-<template>
+<template >
+<div v-if="on">
   <div id="userMain">
-
+    <!-- 搜索框 可以靠用户输入快速过滤出 对应的数据 -->
+    <div id="sou">
+      <b>搜索 : </b><input type="text" v-model="sou" @keyup="keyup">
+      <button @click="sou=''">清空</button>
+      <h1 id="nullTIP" v-if="!books[0][0]" >没有搜索到任何内容</h1>
+    </div>
+    
     <table>
         <thead>
             <td>用户账号</td>
@@ -36,16 +43,18 @@
     </table>
     <div id="page">
       <button @click="go(1)">上一页</button>
-      当前页: <input type="text" v-model="index">
+      当前页: <input type="text" v-model.number="index">
+      /{{books.length}}
       <button @click="go(2)">下一页</button>
     </div>
   </div>
+</div>
 </template>
 
 <script>
 //引入需要使用的配置
 import axios from 'axios';
-import {reactive,toRefs,ref,inject} from 'vue';
+import {reactive,toRefs,ref,inject,watch} from 'vue';
 import {useStore} from 'vuex'
 import { useRouter } from 'vue-router';
 
@@ -69,16 +78,23 @@ setup(){
               }
             }
         }
-        data.books = a;
+        data.allBook=data.books = a;
+        data.on = true;
     }
  )
  //获取重置组件的方法
  let reload = inject('reload');
  let data = reactive({
+    //保存接收的所有数据(这里只会在加载中使用 当搜索栏为空时 会再次使用该数据)
+    allBook:[],
+    //当前使用的数据
     books:[],
+    
+    //页数
     index:1,
     //前后翻页
     go(p){
+      
       switch(p){
         //下一页 需要=2
         case 2: 
@@ -119,10 +135,59 @@ setup(){
           )
         }
       })
+    },
+    //搜索的内容
+    sou:'',
+    //控制初始加载时间
+    on:false,
+ })
+ //监视属性 用于监视 搜索框内的内容
+ watch(()=>data.sou,(newValue,oldValue)=>{
+  if(data.sou==''){
+    //当搜索内容空时 将数据重置
+    return data.books = data.allBook
+  }
+    //开始遍历 allBook 找到其中对应的数据添加到 data.books中
+    let a = [];
+    let b = 15;
+
+    //这里的c容纳 零时数据 之后会交给 books
+    let c =[];
+    c.push([])
+    //d作为一维数组的下标使用
+    let d =0;
+    //这里需要 -1 因为下标是从0开始的
+    for(var i=0;i<=data.allBook.length-1;i++){
+        a.push([]);
+        for(var j=0;j<=b-1;j++){
+          if(data.allBook[i][j] != undefined){
+            if(data.allBook[i][j].user.indexOf(data.sou) != -1){
+              if(c[d].length>=15){
+                d++;
+                c.push([]);
+              }
+              c[d].push(data.allBook[i][j])
+            }
+          } 
+        }
+    }
+    data.books = c;
+  })
+ //用于监视页数索引
+  watch(()=>data.index,()=>{
+  //当 切换 非number 时 重新转换为 number
+    if(typeof data.index!='number'){
+       alert('请输入数字');
+        data.index = 1;
+    }
+    //当超过 books的上线后 重新置为1 
+    if(data.index > data.books.length){
+      alert('超过了最大索引\n现重置为1')
+      data.index = 1
     }
  })
-
- return{
+ 
+  return{
     ...toRefs(data)
  }
 },
@@ -130,6 +195,18 @@ setup(){
 </script>
 
 <style scoped>
+/* 搜索框样式 */
+#sou>input{
+  width: 150px;
+  margin-bottom:15px;
+  margin-right:5px
+}
+
+#nullTIP{
+  text-align: center;
+  margin-bottom: 50px;
+}
+/* 用户表样式 */
 #userMain{
     padding: 15px;
 }
@@ -179,4 +256,6 @@ input{
   margin-top: 15px;
   margin-right: 15px;
 }
+
+
 </style>

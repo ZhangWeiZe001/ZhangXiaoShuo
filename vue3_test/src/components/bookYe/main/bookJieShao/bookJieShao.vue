@@ -71,6 +71,10 @@ export default {
       on:false,
       //加入书架
       joinbookBox(bookId){
+        if(localStorage.getItem('userPending')== null){
+          return alert('请登录之后再加入书架!')
+        }
+
         axios({
           method:'post',
           url:'http://127.0.0.1:5055/joinbookBox',

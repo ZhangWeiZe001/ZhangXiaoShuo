@@ -29,9 +29,11 @@ setup(){
  const $router = useRouter();
 
  let data = reactive({
-  lei:[true,false],
+  //用于控制显示的组件
+  lei:[false,true],
   //动态的css 
   css:['on',''],
+
   cut(index){
     //将所有的元素置为 false
     for(let i=0;i<this.lei.length;i++){
@@ -40,6 +42,7 @@ setup(){
     //再给当前选择的置为 true
     this.lei[index] = true;
 
+    //将所有的样式先设置为 空 再将index 对应的参数置为 on
     for(let i=0;i<this.css.length;i++){
       this.css[i] = '';
     }

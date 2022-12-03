@@ -2,29 +2,13 @@
   <div id="shezhi">
     <ul>
         <li>
-            <!-- 该div没有作用 仅裹元素使用 (不能给li上这个方法)-->
-            <div @click="shezhi" style="cursor:pointer">
-             <i class="fas fa-cog fa-fw" style="font-size:20px"></i>
-             <p>设置</p>
-            </div>    
-            <div id="SheBox" v-show="box.SheBox">
-                <h2>设置</h2>
-                <div>
-                   <p style="font-size:18px;float: left;margin-right: 15px;">背景颜色:</p> 
-                   <span title="默认" style="background-color: rgb(237,231,218);"   @click="bianse('rgb(237,231,218)')"></span>
-                   <span title="牛皮纸" style="background-color: rgb(246,237,212);" @click="bianse('rgb(246,237,212)')"></span>
-                   <span title="淡绿色" style="background-color: rgb(232,244,232);" @click="bianse('rgb(232,244,232)')"></span>
-                   <span title="淡蓝色" style="background-color: rgb(230,243,244);" @click="bianse('rgb(230,243,244)')"></span>
-                   <span title="淡粉色" style="background-color: rgb(244,232,230);" @click="bianse('rgb(244,232,230)')"></span>
-                </div>
-            </div>
+            <SheBox @mainRGB="mainRGB"></SheBox>
         </li>
         <li>
-          <!-- 后期换路由 -->
-          <a href="">
+          <router-link to="/">
             <i class="fas fa-home fa-fw" style="font-size:20px"></i>
             <p>首页</p>
-          </a>  
+          </router-link>
         </li>
     </ul>
   </div>
@@ -52,6 +36,8 @@
 </template>
 
 <script>
+import SheBox from './SheBox.vue'
+
 import {reactive,toRefs,ref,inject,onBeforeUnmount} from 'vue';
 import {useStore} from 'vuex'
 import { useRouter } from 'vue-router';
@@ -59,6 +45,7 @@ export default {
  name:'Font',
  //声明接收自定义事件
  emits:['mainRGB'],
+ components:{SheBox},
  setup(props,context){
     //导入路由
     const $router = useRouter();
@@ -66,24 +53,11 @@ export default {
     const $store = useStore();
     
     let data = reactive({
-      box:{
-        SheBox:false,
-      },
+      mainRGB(rgb){
+        context.emit('mainRGB',rgb)
+      }
     })
     
-    //关于设置的方法都写在这个对象中
-    let Sheboxfunction={
-       //设置开关
-       shezhi(){
-        //取反
-        data.box.SheBox = !data.box.SheBox
-       },
-       //变色
-       bianse(rgb){
-        context.emit('mainRGB',rgb)
-        }
-    }
-
     //接收 祖先组件传递过来的小说内容
     let book = inject('book').book;
 
@@ -117,7 +91,6 @@ export default {
     return{
         ...toRefs(data),
         //交出关于设置的方法(使用解构赋值)
-        ...Sheboxfunction,
         ...goto,
     }
  },
