@@ -3,7 +3,7 @@
   <div id="userMain">
     <!-- 搜索框 可以靠用户输入快速过滤出 对应的数据 -->
     <div id="sou">
-      <b>搜索 : </b><input type="text" v-model="sou" @keyup="keyup">
+      <b>搜索(账号) : </b><input type="text" v-model="sou" @keyup="keyup">
       <button @click="sou=''">清空</button>
       <h1 id="nullTIP" v-if="!books[0][0]" >没有搜索到任何内容</h1>
     </div>
