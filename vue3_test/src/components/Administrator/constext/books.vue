@@ -1,9 +1,33 @@
 <template>
     <div id="userMain" v-if="on">
-      <!-- 搜索框 可以靠用户输入快速过滤出 对应的数据 -->
+      <!-- 搜索框 可以靠用户输入 书名或书籍Id来 来获取对应的数据 -->
       <div id="sou">
-        <b>搜索(Id) : </b><input type="text" v-model="sou" @keyup="keyup">
-        <button @click="sou=''">清空</button>
+        <b>搜索:
+        <select v-model="souClass">
+          <option value="Id">Id</option>
+          <option value="Name">书名</option>
+          <option value="Author">作者</option>
+          <option value="bookClass">类型</option>
+        </select> 
+        </b>
+        
+        <span v-if="souClass!='bookClass'">
+          <input type="text" v-model="sou" @keyup="keyup">
+          <button @click="sou=''">清空</button>
+        </span>
+
+        <!-- 如果用户 选择了类型则切换为 另一个表示类型的下拉列表框-->
+        <span v-else>
+          请选择书籍类型:<select v-model="sou">
+            <option value="历史">历史</option>
+            <option value="军事">军事</option>
+            <option value="科幻">科幻</option>
+            <option value="武侠">武侠</option>
+            <option value="仙侠">仙侠</option>
+            <option value="奇幻">奇幻</option>
+            <option value="灵异">灵异</option>
+          </select>
+        </span>
         <h1 id="nullTIP" v-if="!books[0][0]" >没有搜索到任何内容</h1>
       </div>
     
@@ -25,6 +49,7 @@
              <td v-else><input type="text" v-model="book.Author"></td>
 
              <td v-if="!book.amend">{{book.Class}}</td>
+
              <td v-else><select v-model="book.Class">
               <option value="历史">历史</option>
               <option value="军事">军事</option>
@@ -125,14 +150,24 @@
       },
       //搜索的内容
       sou:'',
+      //使用什么搜索
+      souClass:'Id',
       //控制初始加载时间
       on:false,
     })
-    watch(()=>data.sou,(newValue,oldValue)=>{
-  if(data.sou==''){
-    //当搜索内容空时 将数据重置
+  watch(()=>data.sou,(newValue,oldValue)=>{
+    if(data.sou==''){
+    //当搜索内容空时 将数据重置 同时退出循环
     return data.books = data.allBook
-  }
+    }
+
+    //这里使用一个变量保存 查找的类型
+    let Class = data.souClass;
+    //如果用户使用的书籍类型 搜索的话 Class = 'Class'(搜索保存的是 用户选择搜索的信息)
+    if(data.souClass=='bookClass'){
+      Class = 'Class';
+    }
+
     //开始遍历 allBook 找到其中对应的数据添加到 data.books中
     let a = [];
     let b = 15;
@@ -147,7 +182,8 @@
         a.push([]);
         for(var j=0;j<=b-1;j++){
           if(data.allBook[i][j] != undefined){
-            if((data.allBook[i][j].Id+'').indexOf(data.sou) != -1){
+            //这里的 Class 是作为对象的属性名使用
+            if((data.allBook[i][j][Class]+'').indexOf(data.sou) != -1){
               if(c[d].length>=15){
                 d++;
                 c.push([]);
@@ -182,12 +218,17 @@
   
 <style scoped>
   /* 搜索框样式 */
-  #sou>input{
-    width: 150px;
+  #sou{
     margin-bottom:15px;
+  }
+  #sou input{
+    width: 150px;
     margin-right:5px
   }
-
+  #sou select{
+    margin:0 10px
+  }
+  /* 提示没有搜索样式 */
   #nullTIP{
     text-align: center;
     margin-bottom: 50px;
